@@ -1,0 +1,22 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "description": "\"# node-todo-api\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurek2006/node-todo-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jurek2006/node-todo-api/issues"
+  },
+  "homepage": "https://github.com/jurek2006/node-todo-api#readme",
+  "dependencies": {
+    "mongodb": "^2.2.5"
+  }
+}
