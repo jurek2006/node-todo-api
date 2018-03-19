@@ -4,12 +4,16 @@
   "description": "\"# node-todo-api\"",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jurek2006/node-todo-api.git"
+  },
+  "engines": {
+    "node": "9.2.0"
   },
   "author": "",
   "license": "ISC",
