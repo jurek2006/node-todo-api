@@ -9,7 +9,7 @@ if(process.env.PORT){
  options= {
      auth: {
          user: 'todouser',
-         password: 'Osiolek@1925'
+         password: 'Osiolek1925'
      }
  }
 }else{
