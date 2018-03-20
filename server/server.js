@@ -8,6 +8,8 @@ if(env === 'development'){
 } else if (env === 'test'){
     process.env.PORT = 3000;
     process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+} else if(env === 'production'){
+    process.env.MONGODB_URI = 'mongodb://user:haslo@ds119049.mlab.com:19049/todo';
 }
 
 const {ObjectID} = require('mongodb');
