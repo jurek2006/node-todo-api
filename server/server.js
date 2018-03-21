@@ -24,12 +24,12 @@ app.post('/todos', (req, res) => {
     });
 
     todo.save()
-    .then(doc => {
-        res.send(doc);
-    })
-    .catch(err => {
-        res.status(400).send(err);
-    });
+        .then(doc => {
+            res.send(doc);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        });
 });
 
 app.get('/todos', (req, res) => {
@@ -97,6 +97,21 @@ app.patch('/todos/:id', (req, res) => {
     }).catch(err => { res.status(400).send(); });
 });
 
+// route POST /users
+app.post('/users', (req, res) => {
+    const user = new User(_.pick(req.body, ['email', 'password']));
+
+    user.save()
+        .then(user => {
+            return user.generateAuthToken();
+        })
+        .then(token => {
+            res.header('x-auth', token).send(user);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        });
+});
 
 if(!module.parent){
     app.listen(port, () => {
