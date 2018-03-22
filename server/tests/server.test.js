@@ -221,7 +221,7 @@ describe('POST /users', () => {
                     expect(user.password).toNotBe(password); //sprawdzamy czy hasło zostało shashowane
                     expect(user.password.length).toBeGreaterThan(0); //sprawdzam czy hasło (shashowane) jest niepuste
                     done();
-                });
+                }).catch(err => done(err));
             });
     });
 
@@ -241,7 +241,7 @@ describe('POST /users', () => {
                 User.findOne({email}).then(user => {
                     expect(user).toNotExist();
                     done();
-                });
+                }).catch(err => done(err));
             });
 
     });
@@ -262,7 +262,7 @@ describe('POST /users', () => {
                 User.findOne({email}).then(user => {
                     expect(user).toNotExist();
                     done();
-                });
+                }).catch(err => done(err));
             });
 
     });
