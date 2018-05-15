@@ -17,6 +17,7 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
+// route dodawania to-do
 app.post('/todos', (req, res) => {
     console.log(req.body);
     const todo = new Todo({
@@ -33,6 +34,7 @@ app.post('/todos', (req, res) => {
         });
 });
 
+// route pobierania wszystkich to-do
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
@@ -41,7 +43,7 @@ app.get('/todos', (req, res) => {
     });
 });
 
-// GET /todos/12345
+// route pobierania to-do o zadanym id
 app.get('/todos/:id', (req, res) => {
     const id = req.params.id;
 
@@ -57,6 +59,7 @@ app.get('/todos/:id', (req, res) => {
     }).catch(err => res.status(400).send());
 });
 
+// route usuwania to-do o zadanym id
 app.delete('/todos/:id', (req, res) => {
     const id = req.params.id;
 
@@ -73,6 +76,7 @@ app.delete('/todos/:id', (req, res) => {
 
 });
 
+// route uaktualniająca zadanie o zadanym id 
 app.patch('/todos/:id', (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['text', 'completed']);
@@ -98,7 +102,7 @@ app.patch('/todos/:id', (req, res) => {
     }).catch(err => { res.status(400).send(); });
 });
 
-// route POST /users
+// route tworząca użytkowika o podanym email i haśle (ze sprawdzaniem czy email jest poprawny, a hasło ma minimum 6 znaków)
 app.post('/users', (req, res) => {
     const user = new User(_.pick(req.body, ['email', 'password']));
 
@@ -115,12 +119,15 @@ app.post('/users', (req, res) => {
 });
 
 
-// route GET /users/me
+// route GET /users/me - route wymagająca autentykacji
+// jeśli użytkownik niezautentykowany zwraca 401 Unauthorised
+// musi mieć przekazany w headers token x-auth
 app.get('/users/me', authenticate, (req, res) => {
     res.send(req.user);
 });
 
-// route POST /users/login - logowanie
+// route POST /users/login - logowanie użytkownika
+// zwraca w header token x-auth potrzebny do autentyfikacji
 app.post('/users/login', (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
 
@@ -134,7 +141,7 @@ app.post('/users/login', (req, res) => {
     })
 });
 
-// route DELETE /users/me/token - wylogowywanie
+// route DELETE /users/me/token - wylogowywanie (musi mieć przekazany x-auth)
 app.delete('/users/me/token', authenticate, (req, res) => {
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
