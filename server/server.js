@@ -18,11 +18,12 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 
 // route dodawania to-do
-app.post('/todos', (req, res) => {
+app.post('/todos', authenticate, (req, res) => { 
     console.log(req.body);
     const todo = new Todo({
         text: req.body.text,
-        completed: req.body.completed
+        completed: req.body.completed,
+        _creator: req.user.id
     });
 
     todo.save()
@@ -35,8 +36,10 @@ app.post('/todos', (req, res) => {
 });
 
 // route pobierania wszystkich to-do
-app.get('/todos', (req, res) => {
-    Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {
+    Todo.find({
+        _creator: req.user._id
+    }).then((todos) => {
         res.send({todos});
     }, err => {
         res.status(400).send(err);
