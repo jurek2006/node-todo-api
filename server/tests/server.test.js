@@ -76,6 +76,7 @@ describe('GET /todos/:id', () => {
     it('should get todo doc with matching id', done => {
         request(app)
             .get(`/todos/${todos[0]._id.toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(200)
             .expect(res => {
                 expect(res.body.todo.text).toBe(todos[0].text);
@@ -86,6 +87,7 @@ describe('GET /todos/:id', () => {
     it('should return 404 if todo not found', done => {
         request(app)
             .get(`/todos/${new ObjectID().toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -93,6 +95,15 @@ describe('GET /todos/:id', () => {
     it('should return 404 for invalid id', done => {
         request(app)
             .get(`/todos/123`)
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should not return todo doc created by other user', done => {
+        request(app)
+            .get(`/todos/${todos[1]._id.toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -103,6 +114,7 @@ describe('DELETE /todos/:id', () => {
 
         request(app)
             .delete(`/todos/${todos[0]._id.toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(200)
             .expect(res => {
                 expect(res.body.todo._id).toBe(todos[0]._id.toHexString());
@@ -119,9 +131,28 @@ describe('DELETE /todos/:id', () => {
             });
     });
 
+    it('should not remove a todo created by other user', done => {
+
+        request(app)
+            .delete(`/todos/${todos[1]._id.toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(404)
+            .end((err, res) => {
+                if(err){
+                    return done(err);
+                }
+
+                Todo.findById(todos[0]._id.toHexString()).then(todo => {
+                    expect(todo).toExist();
+                    done();
+                }).catch(err => done(err));
+            });
+    });
+
     it('should return 404 if todo not found', done => {
         request(app)
             .delete(`/todos/${new ObjectID().toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -129,6 +160,7 @@ describe('DELETE /todos/:id', () => {
     it('should return 404 for invalid id', done => {
         request(app)
             .delete(`/todos/123`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -142,6 +174,7 @@ describe('PATCH /todos/:id', () => {
 
         request(app)
             .patch(`/todos/${firstItemId}`)
+            .set('x-auth', users[0].tokens[0].token)
             // update text, set completed to true
             .send({text: textAfterUptade, completed: true})
             // 200
@@ -155,6 +188,20 @@ describe('PATCH /todos/:id', () => {
             .end(done);
     });
 
+    it('should not update todo created by other user', done => {
+        // grab id of first item 
+        const firstItemId = todos[0]._id.toHexString(); //todo użytkownika 0
+        const textAfterUptade = 'Updated text';
+
+        request(app)
+            .patch(`/todos/${firstItemId}`)
+            .set('x-auth', users[1].tokens[0].token) //autentykacja jako użytkownik 1
+            // update text, set completed to true
+            .send({text: textAfterUptade, completed: true})
+            .expect(404)
+            .end(done);
+    });
+
     it('should clear completedAt when todo is not completed', done => {
         // grab id of second item
         const secondItemId = todos[1]._id.toHexString();
@@ -162,6 +209,7 @@ describe('PATCH /todos/:id', () => {
 
         request(app)
         .patch(`/todos/${secondItemId}`)
+        .set('x-auth', users[1].tokens[0].token)
         // update test, set completed to false
         .send({text: textAfterUptade, completed: false})
         // 200

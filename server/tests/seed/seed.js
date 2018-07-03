@@ -20,6 +20,10 @@ const users = [{
     _id: userTwoId,
     email: 'notgood@node.pl',
     password: 'costam2',
+    tokens: [{
+        access: 'auth',
+        token: jwt.sign({_id: userTwoId.toHexString(), access: 'auth'}, 'secret123').toString()
+    }]
 }];
 
 const todos = [
